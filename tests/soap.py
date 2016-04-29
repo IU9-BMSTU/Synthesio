@@ -21,7 +21,6 @@ glb = {"OS(=O)(=O)[O-][Na+]": 38.7,
        "O":1.9,
        "C":0.5
 }
-
 def count_glb(mol_gr):
         return sum([glb[el] for el in mol_gr])
 # функция оценки качества сгенерированного мыла
