@@ -12,13 +12,16 @@ import numpy as np
 from prettytable import PrettyTable
 
 # рассчет индекса GLB
-glb = { 'C(=O)O'                : 2.1,
-        'O'                     : 1.9,
-        'C'                     : -0.5,
-        'N'                     : 9.4,
-        'OS(=O)(=O)[O-][Na+]'   : 38.7,
-        'C(=O)[O-][Na+]'        : 19.1,
-        'C(=O)[O-][K+]'         : 21.1 }
+glb = {"OS(=O)(=O)[O-][Na+]": 38.7,
+       "OS(=O)(=O)[O-][K+]": 38.7,
+       "C(=O)[O-][Na+]": 21.1,
+       "C(=O)[O-][K+]": 19.1,
+       "C(=O)[O-]":  2.1,
+       "[N+]": 9.4,
+       "O":1.9,
+       "C":0.5
+}
+
 def count_glb(mol_gr):
         return sum([glb[el] for el in mol_gr])
 # функция оценки качества сгенерированного мыла
@@ -36,10 +39,14 @@ def check_danger(smiles):
         return False
     return True
 # запуск генетического алгоритма
+fragments_head = ["C"]
+fragments_end = ["OS(=O)(=O)[O-][Na+]", "OS(=O)(=O)[O-][K+]", "C(=O)[O-][Na+]", "C(=O)[O-][K+]", "C(=O)[O-]"]
+fragments = ["O", "C", "[N+]", "C"]
 results = GenAlg(create_quality_func([13], CreateModel(ReadData('soap-learn.csv'), descs), [check_danger]),
-                ['C(=O)O', 'O', 'OS(=O)(=O)[O-][Na+]', 'C(=O)[O-][Na+]', 'C(=O)[O-][K+]', 'C', 'O', 'N'],
+                [fragments_head, fragments, fragments_end],
                 ['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'O', 'C', 'C', 'OS(=O)(=O)[O-][Na+]'],
-                max_iters=800)[:10]
+                max_iters=900)
+
 # top-5
 t = PrettyTable(['smiles', 'predicted quality', 'real GLB index'])
 [t.add_row([''.join(mol), predict, count_glb(mol)]) for mol, predict in results[:5]]

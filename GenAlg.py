@@ -6,16 +6,8 @@ import operator
 import Queue
 import ast
 
-# исходное вещество для первой итерации генетического алгоритма (adam)
-# задается списком молекулярных групп
-#
-# quality_func по формуле smiles вычисляет на сколько полученное вещество близко
-# к заданным пользователем параметрам (чем ближе к 0, тем лучше)
-# если полученное вещество вообще недопустимо, функция должна вернуть None
-#
-# возвращаемое значение -- список сгенерированных веществ, отсортированный по
-# убыванию результатов функции оценки
-def GenAlg(quality_func, fragment_list, adam, max_iters = 1000, pop_length = 300):
+def GenAlg(quality_func, fragment_lists, adam, max_iters = 1000, pop_length = 300):
+    fr_head, fr_tail, fr_end = fragment_lists[0], fragment_lists[1], fragment_lists[2]
     # словарь полученных веществ
     substances = { str(adam): quality_func(''.join(adam))}
     # очередь веществ на мутацию
@@ -27,11 +19,16 @@ def GenAlg(quality_func, fragment_list, adam, max_iters = 1000, pop_length = 300
         newmol0 = mol_groups[:]
         # рассчет индексов и выполнение мутаций
         indm = np.random.randint(len(mol_groups))
-        newmol0[indm] = fragment_list[np.random.randint(len(fragment_list))]
-        start_ind1 = np.random.randint(len(mol_groups))
-        start_ind2 = np.random.randint(len(mol_groups))
-        finish_ind1 = start_ind1 + np.random.randint(len(mol_groups)-start_ind1)
-        finish_ind2 = start_ind2 + np.random.randint(len(mol_groups)-start_ind2)
+        if indm == len(mol_groups) - 1:
+            newmol0[indm] = fr_end[np.random.randint(len(fr_end))]
+        elif indm == 0:
+            newmol0[indm] = fr_head[np.random.randint(len(fr_head))]
+        else:
+            newmol0[indm] = fr_tail[np.random.randint(len(fr_tail))]
+        start_ind1 = np.random.randint(len(mol_groups)-2) + 1
+        start_ind2 = np.random.randint(len(mol_groups)-2) + 1
+        finish_ind1 = start_ind1 + np.random.randint(len(mol_groups)-start_ind1-1)
+        finish_ind2 = start_ind2 + np.random.randint(len(mol_groups)-start_ind2-1)
         newmol1 = mol_groups[:][:start_ind1] + newmol0[:][start_ind2:finish_ind2] + mol_groups[:][finish_ind1:]
         newmol2 = newmol0[:][:start_ind2] + mol_groups[:][start_ind1:finish_ind1] + mol_groups[:][finish_ind2:]
         # список новых веществ
