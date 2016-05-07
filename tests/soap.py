@@ -22,7 +22,7 @@ glb = {"OS(=O)(=O)[O-][Na+]": 38.7,
        "C":0.5
 }
 def count_glb(mol_gr):
-        return sum([glb[el] for el in mol_gr])
+    return sum([glb[el] for el in mol_gr])
 # функция оценки качества сгенерированного мыла
 def create_quality_func(expected_v, predict_model, rules):
     def q(smiles):
@@ -44,9 +44,9 @@ fragments = ["O", "C", "[N+]", "C"]
 results = GenAlg(create_quality_func([13], CreateModel(ReadData('soap-learn.csv'), descs), [check_danger]),
                 [fragments_head, fragments, fragments_end],
                 ['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'O', 'C', 'C', 'OS(=O)(=O)[O-][Na+]'],
-                max_iters=900)
+                iters=900)
 
 # top-5
-t = PrettyTable(['smiles', 'predicted quality', 'real GLB index'])
+t = PrettyTable(['smiles', 'predicted quality', 'GLB index'])
 [t.add_row([''.join(mol), predict, count_glb(mol)]) for mol, predict in results[:5]]
 print t

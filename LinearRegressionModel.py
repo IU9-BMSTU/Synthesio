@@ -5,10 +5,10 @@ from sklearn import linear_model
 import pybel
 
 def ReadData(filename):
-    # формат входных данных: csv таблица с разделителем ';'
+    # формат входных данных: csv таблица с разделителем ','
     # первый столбец содержит формулу в формате smiles
     # остальные столбцы содержат числовые значения признаков
-    return [line.rstrip().split(';') for line in open(filename)]
+    return [line.rstrip().split(',') for line in open(filename)]
 
 def CalcPredicates(smiles, predicates):
     return [f(smiles) for f in predicates]

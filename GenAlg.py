@@ -6,14 +6,14 @@ import operator
 import Queue
 import ast
 
-def GenAlg(quality_func, fragment_lists, adam, max_iters = 1000, pop_length = 300):
+def GenAlg(quality_func, fragment_lists, adam, iters = 1000, pop_length = 300):
     fr_head, fr_tail, fr_end = fragment_lists[0], fragment_lists[1], fragment_lists[2]
     # словарь полученных веществ
     substances = { str(adam): quality_func(''.join(adam))}
     # очередь веществ на мутацию
     queue = Queue.Queue();
     queue.put(adam)
-    # функци мутации
+    # функция мутации
     def generate(mol_groups):
         # копирование исходного вещества
         newmol0 = mol_groups[:]
@@ -34,7 +34,11 @@ def GenAlg(quality_func, fragment_lists, adam, max_iters = 1000, pop_length = 30
         # список новых веществ
         return [newmol0, newmol1, newmol2]
     # рассчет популяций
-    for generation in range(max_iters):
+    for generation in range(iters):
+        if queue.empty():
+            print 'bad start parameters'
+            print 'population was extinct'
+            break
         next_mols = generate(queue.get())
         for mol in next_mols:
             res = quality_func(''.join(mol))
